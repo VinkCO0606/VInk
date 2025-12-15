@@ -1,21 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, memo } from 'react'; // Importados useCallback y memo para optimización
-import { 
-
-  type LegalModalProps = {
-  title: string;
-  isOpen: boolean;
-  onClose: () => void;
-  content: string;
-};
-
-  Users, 
-  ArrowRightLeft, 
-  MessageSquare, 
-  ShieldCheck, 
-  Zap, 
-  CheckCircle2, 
+import React, { useState, useEffect, useCallback, memo } from 'react';
+import {
+  Users,
+  ArrowRightLeft,
+  MessageSquare,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
   AlertCircle,
   ChevronRight,
   Menu,
@@ -23,6 +15,13 @@ import {
   Link as LinkIcon,
   Info
 } from 'lucide-react';
+
+type LegalModalProps = {
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+  content: string;
+};
 
 // Utility para formateo de moneda colombiana
 const formatCurrency = (value: number) => {
