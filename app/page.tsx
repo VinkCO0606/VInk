@@ -27,7 +27,8 @@ const formatCurrency = (value: number) => {
 };
 
 // Componente para el modal legal - ENVUELTO EN MEMO para evitar re-renderizados innecesarios.
-const LegalModal = memo(({ title, isOpen, onClose, content }) => {
+const LegalModal = memo(
+  ({ title, isOpen, onClose, content }: LegalModalProps) => {
   if (!isOpen) return null;
   // Optimizaciones de rendimiento: Este modal solo se renderizará si sus props cambian.
   return (
