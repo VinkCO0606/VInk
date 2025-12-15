@@ -100,8 +100,20 @@ const handleSliderChange = (
 
   const isMaxAmount = amount >= 3000000;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
+  const type =
+    activeTab === 'borrower'
+      ? 'Solicitud de préstamo'
+      : 'Interés en prestar';
+
+  setNotification({
+    message: `Gracias. Hemos registrado tu ${type}. Esto es una demo.`,
+    type: 'success',
+  });
+
+  setTimeout(() => setNotification(null), 5000);
+};
     // Simulación de envío
     const type = activeTab === 'borrower' ? 'Solicitud de préstamo' : 'Interés en prestar';
     const finalAmount = isMaxAmount ? '3.000.000+' : formatCurrency(amount);
