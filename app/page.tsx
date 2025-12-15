@@ -93,7 +93,7 @@ export default function VinkLanding() {
     }
   }, [activeTab]);
 
-  const handleSliderChange = (e) => {
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(Number(e.target.value));
   };
 
