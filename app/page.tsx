@@ -2,6 +2,14 @@
 
 import React, { useState, useEffect, useCallback, memo } from 'react'; // Importados useCallback y memo para optimización
 import { 
+
+  type LegalModalProps = {
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+  content: string;
+};
+
   Users, 
   ArrowRightLeft, 
   MessageSquare, 
