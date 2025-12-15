@@ -1,6 +1,5 @@
 'use client';
 
-git status
 import React, { useState, useEffect } from 'react';
 import { 
   Users, 
@@ -37,7 +36,7 @@ type LegalModalProps = {
 };
 
 // Componente para el modal legal
-const LegalModal = ({ title, isOpen, onClose, content }: LegalModalProps) => {
+const LegalModal = ({ title, isOpen, onClose, content }: LegalModalProps) => {git status
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-emerald-950/60 z-50 flex items-center justify-center p-4 transition-opacity duration-300">
