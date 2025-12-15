@@ -92,9 +92,11 @@ export default function VinkLanding() {
     }
   }, [activeTab]);
 
-  const handleSliderChange = (e) => {
-    setAmount(Number(e.target.value));
-  };
+const handleSliderChange = (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  setAmount(Number(e.target.value));
+};
 
   const isMaxAmount = amount >= 3000000;
 
