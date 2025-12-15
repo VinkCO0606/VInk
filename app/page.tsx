@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react'; // Importados useCallback y memo para optimización
 import { 
   Users, 
   ArrowRightLeft, 
@@ -17,7 +15,7 @@ import {
 } from 'lucide-react';
 
 // Utility para formateo de moneda colombiana
-const formatCurrency = (value: number) => {
+const formatCurrency = (value) => {
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
@@ -26,21 +24,14 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-// Componente para el modal legal
-type LegalModalProps = {
-  title: string;
-  isOpen: boolean;
-  onClose: () => void;
-  content: string;
-};
-
-// Componente para el modal legal
-const LegalModal = ({ title, isOpen, onClose, content }: LegalModalProps) => {
+// Componente para el modal legal - ENVUELTO EN MEMO para evitar re-renderizados innecesarios.
+const LegalModal = memo(({ title, isOpen, onClose, content }) => {
   if (!isOpen) return null;
+  // Optimizaciones de rendimiento: Este modal solo se renderizará si sus props cambian.
   return (
     <div className="fixed inset-0 bg-emerald-950/60 z-50 flex items-center justify-center p-4 transition-opacity duration-300">
       <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6 relative shadow-2xl transform transition-transform duration-300 scale-100">
-        <button onClick={onClose} className="absolute top-4 right-4 text-emerald-700 hover:text-purple-700 transition-colors">
+        <button onClick={onClose} className="absolute top-4 right-4 text-emerald-700 hover:text-purple-700 transition-colors" aria-label="Cerrar modal">
           <X size={24} />
         </button>
         <h3 className="text-xl font-bold text-emerald-950 mb-4">{title}</h3>
@@ -50,30 +41,25 @@ const LegalModal = ({ title, isOpen, onClose, content }: LegalModalProps) => {
       </div>
     </div>
   );
-};
+});
 
-// Componente de notificación flotante (reemplazo de alert())
-type NotificationProps = {
-  message: string | null;
-  type: 'success' | 'error';
-  onClose: () => void;
-};
-const Notification = ({ message, type, onClose }: NotificationProps) => {
+// Componente de notificación flotante (reemplazo de alert()) - ENVUELTO EN MEMO
+const Notification = memo(({ message, type, onClose }) => {
   if (!message) return null;
   
-  const bgColor = type === 'success' ? 'bg-lime-500' : 'bg-red-500'; // Se usa el nuevo verde lima
+  const bgColor = type === 'success' ? 'bg-lime-500' : 'bg-red-500';
   const Icon = type === 'success' ? CheckCircle2 : AlertCircle;
 
   return (
     <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 p-4 rounded-lg shadow-xl text-white flex items-center gap-3 ${bgColor} transition-all duration-300 transform animate-slide-in-down`}>
       <Icon size={20} />
       <span className="font-semibold text-sm">{message}</span>
-      <button onClick={onClose} className="ml-4 p-1 rounded-full hover:bg-white/20 transition-colors shrink-0">
+      <button onClick={onClose} className="ml-4 p-1 rounded-full hover:bg-white/20 transition-colors shrink-0" aria-label="Cerrar notificación">
         <X size={16} />
       </button>
     </div>
   );
-};
+});
 
 // Componente principal de la landing page
 export default function VinkLanding() {
@@ -84,7 +70,7 @@ export default function VinkLanding() {
   const [modalContent, setModalContent] = useState(null);
   const [notification, setNotification] = useState(null); // Nuevo estado para la notificación
 
-  // Scroll al formulario cuando se selecciona un modo
+  // Lógica de Scroll al formulario
   useEffect(() => {
     if (activeTab) {
       const element = document.getElementById('main-form');
@@ -92,34 +78,22 @@ export default function VinkLanding() {
     }
   }, [activeTab]);
 
-const handleSliderChange = (
-  e: React.ChangeEvent<HTMLInputElement>
-) => {
-  setAmount(Number(e.target.value));
-};
+  const handleSliderChange = (e) => {
+    setAmount(Number(e.target.value));
+  };
 
   const isMaxAmount = amount >= 3000000;
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  const type =
-    activeTab === 'borrower'
-      ? 'Solicitud de préstamo'
-      : 'Interés en prestar';
-
-  setNotification({
-    message: `Gracias. Hemos registrado tu ${type}. Esto es una demo.`,
-    type: 'success',
-  });
-
-  setTimeout(() => setNotification(null), 5000);
-};
+  // Handler de envío optimizado con useCallback
+  // Esto asegura que la función no se recree en cada render, mejorando la performance.
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault();
     // Simulación de envío
     const type = activeTab === 'borrower' ? 'Solicitud de préstamo' : 'Interés en prestar';
     const finalAmount = isMaxAmount ? '3.000.000+' : formatCurrency(amount);
     const rateInfo = activeTab === 'lender' ? ` (Tasa de Retorno E.A. deseada: ${returnRate.toFixed(1)}%)` : '';
     
-    // Muestra la notificación de éxito en lugar de alert()
+    // Muestra la notificación de éxito
     setNotification({ 
         message: `Gracias. Hemos registrado tu ${type} por un valor de ${finalAmount}${rateInfo}. Esto es una demo.`, 
         type: 'success' 
@@ -129,21 +103,22 @@ const handleSubmit = (e) => {
     setTimeout(() => {
         setNotification(null);
     }, 5000); 
-  };
+  }, [activeTab, amount, returnRate, isMaxAmount]); // Dependencias: variables de estado utilizadas.
 
-  const openLegalModal = (type) => {
+  // Handler para abrir el modal legal optimizado con useCallback
+  const openLegalModal = useCallback((type) => {
     const texts = {
       privacy: "POLÍTICA DE PRIVACIDAD\n\nEn cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, VINK informa que los datos personales recolectados serán tratados de manera segura y confidencial. VINK actúa únicamente como un conector tecnológico. Sus datos serán utilizados exclusivamente para:\n\n1. Validar su identidad.\n2. Conectar con potenciales contrapartes.\n3. Análisis estadístico y de mercado.\n\nUsted tiene derecho a conocer, actualizar y rectificar sus datos personales.",
-      terms: "TÉRMINOS Y CONDICIONES\n\nVINK NO ES UNA ENTIDAD FINANCIERA.\n\n1. Naturaleza del Servicio: VINK es una plataforma tecnológica que facilita el contacto entre personas. VINK no presta dinero, no capta recursos, no define tasas de interés y no garantiza el pago de las obligaciones.\n2. Responsabilidad: Cualquier acuerdo económico es responsabilidad exclusiva de los usuarios (prestamista y prestatario).\n3. Costos: El uso de la plataforma puede estar sujeto a tarifas de servicio por uso de tecnología, las cuales serán informadas claramente.\n\nVINK no participa en la negociación, desembolso, verificación de pagos, cobros ni resolución de conflictos entre usuarios.", // <-- FRANCIA DE BLINDAJE LEGAL AÑADIDA
+      terms: "TÉRMINOS Y CONDICIONES\n\nVINK NO ES UNA ENTIDAD FINANCIERA.\n\n1. Naturaleza del Servicio: VINK es una plataforma tecnológica que facilita el contacto entre personas. VINK no presta dinero, no capta recursos, no define tasas de interés y no garantiza el pago de las obligaciones.\n2. Responsabilidad: Cualquier acuerdo económico es responsabilidad exclusiva de los usuarios (prestamista y prestatario).\n3. Costos: El uso de la plataforma puede estar sujeto a tarifas de servicio por uso de tecnología, las cuales serán informadas claramente.\n\nVINK no participa en la negociación, desembolso, verificación de pagos, cobros ni resolución de conflictos entre usuarios.",
       cookies: "POLÍTICA DE COOKIES\n\nUtilizamos cookies propias y de terceros para mejorar la experiencia de navegación y obtener estadísticas de uso. Al continuar navegando, usted acepta su uso."
     };
     setModalContent({ title: type === 'privacy' ? 'Política de Privacidad' : type === 'terms' ? 'Términos y Condiciones' : 'Cookies', text: texts[type] });
-  };
+  }, []); // Dependencia vacía ya que 'texts' es constante y setModalContent es estable.
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-emerald-950 selection:bg-purple-200">
       
-      {/* Definición de animación para la notificación */}
+      {/* Definición de animación para la notificación (Buena práctica mantener CSS fuera del JSX principal) */}
       <style jsx="true">{`
         @keyframes slide-in-down {
           0% { transform: translate(-50%, -100%); opacity: 0; }
@@ -175,7 +150,7 @@ const handleSubmit = (e) => {
             </div>
 
             <div className="md:hidden">
-              <button onClick={() => setMenuOpen(!menuOpen)} className="text-emerald-900 transition-colors">
+              <button onClick={() => setMenuOpen(!menuOpen)} className="text-emerald-900 transition-colors" aria-label="Abrir menú de navegación">
                 {menuOpen ? <X /> : <Menu />}
               </button>
             </div>
@@ -194,7 +169,6 @@ const handleSubmit = (e) => {
       </nav>
 
       {/* SECCIÓN 1: HERO */}
-      return (
       <header className="relative bg-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-purple-50 to-transparent opacity-50 pointer-events-none"></div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 text-center relative z-10">
@@ -392,7 +366,7 @@ const handleSubmit = (e) => {
                       {/* SLIDER COMPONENT (Retorno E.A. / Rentabilidad) */}
                       <div className="space-y-4">
                         <label className="block text-emerald-900 font-bold mb-2">
-                          ¿Qué rango de rentabilidad te gustaría negociar? {/* <-- Change 1 */}
+                          ¿Qué rango de rentabilidad te gustaría negociar?
                         </label>
                         
                         <div className="flex items-center justify-between text-3xl font-extrabold text-purple-700 mb-2">
@@ -437,7 +411,8 @@ const handleSubmit = (e) => {
                   </div>
                   
                   <label className="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" required className="mt-1 w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"/>
+                    {/* Añadido aria-required para accesibilidad */}
+                    <input type="checkbox" required aria-required="true" className="mt-1 w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"/>
                     <span className="text-sm text-emerald-900">
                       He leído y acepto los <button type="button" onClick={() => openLegalModal('terms')} className="text-purple-700 underline hover:text-purple-900 transition-colors">Términos y Condiciones</button> y la <button type="button" onClick={() => openLegalModal('privacy')} className="text-purple-700 underline hover:text-purple-900 transition-colors">Política de Privacidad</button> y la <button type="button" onClick={() => openLegalModal('cookies')} className="text-purple-700 underline hover:text-purple-900 transition-colors">Política de Cookies</button>.
                     </span>
@@ -514,11 +489,11 @@ const handleSubmit = (e) => {
       </section>
 
       {/* SECCIÓN 6: DISCLAIMER LEGAL (MANDATORY) */}
-      <section className="bg-lime-50 py-12 border-t border-lime-100"> {/* Fondo verde más claro */}
+      <section className="bg-lime-50 py-12 border-t border-lime-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <div className="flex flex-col items-center justify-center gap-4 text-lime-700 mb-4"> {/* Icono verde */}
+          <div className="flex flex-col items-center justify-center gap-4 text-lime-700 mb-4">
             <AlertCircle size={32} className="animate-wiggle" />
-            <h4 className="font-bold text-lime-800 uppercase tracking-widest text-sm">Aviso Importante</h4> {/* Título verde */}
+            <h4 className="font-bold text-lime-800 uppercase tracking-widest text-sm">Aviso Importante</h4>
           </div>
           <p className="text-emerald-900 font-medium leading-relaxed text-sm md:text-base border-l-4 border-purple-500 pl-4 md:pl-0 md:border-l-0">
             VINK es una plataforma de conexión. No presta dinero, no administra fondos, no define tasas de interés y no es una entidad financiera. Todas las negociaciones y transferencias de dinero ocurren directamente entre los usuarios.
@@ -574,4 +549,4 @@ const handleSubmit = (e) => {
       />
     </div>
   );
-);
+}
