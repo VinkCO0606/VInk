@@ -1,24 +1,24 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import {
-  Users,
-  ArrowRightLeft,
-  MessageSquare,
-  ShieldCheck,
-  Zap,
-  CheckCircle2,
-  AlertCircle,
-  ChevronRight,
-  Menu,
-  X,
-  Link as LinkIcon,
-  Info,
+import { 
+  Users, 
+  ArrowRightLeft, 
+  MessageSquare, 
+  ShieldCheck, 
+  Zap, 
+  CheckCircle2, 
+  AlertCircle, 
+  ChevronRight, 
+  Menu, 
+  X, 
+  Link as LinkIcon, 
+  Info 
 } from 'lucide-react';
 
 /* =======================
    UTILIDADES
 ======================= */
-const formatCurrency = (value: number) => {
+const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
