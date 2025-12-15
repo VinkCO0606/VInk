@@ -194,6 +194,7 @@ const handleSubmit = (e) => {
       </nav>
 
       {/* SECCIÓN 1: HERO */}
+      return (
       <header className="relative bg-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-purple-50 to-transparent opacity-50 pointer-events-none"></div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 text-center relative z-10">
@@ -573,4 +574,4 @@ const handleSubmit = (e) => {
       />
     </div>
   );
-}
+);
