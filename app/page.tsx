@@ -26,7 +26,6 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-git status
 // Componente para el modal legal
 type LegalModalProps = {
   title: string;
