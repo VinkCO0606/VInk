@@ -53,8 +53,13 @@ const LegalModal = memo(
   );
 });
 
+type NotificationProps = {
+  message: string | null;
+  type: 'success' | 'error';
+  onClose: () => void;
+};
 // Componente de notificación flotante (reemplazo de alert()) - ENVUELTO EN MEMO
-const Notification = memo(({ message, type, onClose }) => {
+const Notification = memo(({ message, type, onClose }: NotificationProps) => {
   if (!message) return null;
   
   const bgColor = type === 'success' ? 'bg-lime-500' : 'bg-red-500';
