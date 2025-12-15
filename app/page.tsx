@@ -1,5 +1,6 @@
 'use client';
 
+git status
 import React, { useState, useEffect } from 'react';
 import { 
   Users, 
@@ -27,7 +28,38 @@ const formatCurrency = (value: number) => {
 };
 
 // Componente para el modal legal
-const LegalModal = ({ title, isOpen, onClose, content }) => {
+type LegalModalProps = {
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+  content: string;
+};
+
+const LegalModal = ({
+  title,
+  isOpen,
+  onClose,
+  content,
+}: LegalModalProps) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-emerald-950/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6 relative shadow-2xl">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-emerald-700 hover:text-purple-700"
+        >
+          <X size={24} />
+        </button>
+        <h3 className="text-xl font-bold text-emerald-950 mb-4">{title}</h3>
+        <div className="text-emerald-900 text-sm whitespace-pre-wrap leading-relaxed">
+          {content}
+        </div>
+      </div>
+    </div>
+  );
+};
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-emerald-950/60 z-50 flex items-center justify-center p-4 transition-opacity duration-300">
