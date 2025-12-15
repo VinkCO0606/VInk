@@ -27,7 +27,7 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-// Componente para el modal legal
+
 // Componente para el modal legal
 type LegalModalProps = {
   title: string;
@@ -35,6 +35,7 @@ type LegalModalProps = {
   onClose: () => void;
   content: string;
 };
+
 const LegalModal = ({ title, isOpen, onClose, content }: LegalModalProps) => {
   if (!isOpen) return null;
   return (
