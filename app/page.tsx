@@ -18,7 +18,7 @@ import {
 /* =======================
    UTILIDADES
 ======================= */
-const formatCurrency = (value: number): string => {
+const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
