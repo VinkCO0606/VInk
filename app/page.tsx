@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 // Utility para formateo de moneda colombiana
-const formatCurrency = (value) => {
+const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
